@@ -45,16 +45,19 @@ def run():
     # Process Image
     res = u2net.run(np.array(img))
 
+    empty_img = Image.new("RGBA", (img.size), 0)
+    new_img = Image.composite(img, empty_img, res.resize((img.size), resample=Image.BILINEAR).convert("L"))
+
     # Save to buffer
     buff = io.BytesIO()
-    res.save(buff, 'PNG')
+    new_img.save(buff, 'WEBP')
     buff.seek(0)
 
     # Print stats
     logging.info(f'Completed in {time.time() - start:.2f}s')
 
     # Return data
-    return send_file(buff, mimetype='image/png')
+    return send_file(buff, mimetype='image/webp')
 
 
 if __name__ == '__main__':
